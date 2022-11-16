@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col">
+    <div class="row">
+        <form action="" method="post" id="myForm">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="url" class="form-label">Url Berita</label>
+                <input type="text" class="form-control" id="url" placeholder="name@example.com" name="url">
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary" id="myButton">GAASS!!</button>
+            </div>
+        </form>
+    </div>
+    <div class="row mt-5">
+        <div id="berita">
+
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $("#myButton").click(function(e) {
+        var data = new FormData()
+
+        data.append("url", $("#url").val())
+        data.append("csrfmiddlewaretoken",$("input[name=csrfmiddlewaretoken]").val())
+        
+        $.ajax({
+            method:"POST",
+            url:`{% url 'scrape' %}`,
+            contentType:false,
+            processData:false,
+            data:data,
+            success:function(res){
+                html = '<table class="table table-responsive"><thead><th>No</th><th>Judul</th>'+
+                    '<th>Teaser</th><th>Berita</th></thead><tbody><tr><td>1</td>'+
+                    '<td>'+ res.data.judul +'</td>' + '<td>' + res.data.teaser + '</td>' +
+                    '<td>' + res.data.berita + '</td></tr></tbody>'
+
+                $("#berita").html(html)
+
+            },
+            errors:function(err){
+                console.log(err)
+            }
+        })
+    })
+</script>
+{% endblock scripts %}
